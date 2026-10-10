@@ -1,0 +1,262 @@
+<title>The Seven and the Five</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a survey ledger. Rows are Jeff's seven systems (rust), columns the UPP's five principles (indigo); a reading panel beside the grid answers whatever cell is chosen. */
+  :root {
+    --bg: #eceee9;
+    --surface: #f7f8f5;
+    --ink: #1c241f;
+    --muted: #59645d;
+    --line: #cdd3cb;
+    --sys: #964519;
+    --sys-soft: #f2e3d8;
+    --pri: #2a4d84;
+    --pri-soft: #dfe6f2;
+    --gap: #9a6d12;
+    --gap-soft: #f3e9cf;
+    --sel: #1c241f;
+    --display: "Literata", "Iowan Old Style", Georgia, serif;
+    --body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131815; --surface: #1b211d; --ink: #e5eae3; --muted: #9ba69e; --line: #2e3731;
+      --sys: #e2925f; --sys-soft: #3a261a; --pri: #93b2e8; --pri-soft: #1f2a3d;
+      --gap: #dcb45c; --gap-soft: #3a3019; --sel: #e5eae3; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131815; --surface: #1b211d; --ink: #e5eae3; --muted: #9ba69e; --line: #2e3731;
+    --sys: #e2925f; --sys-soft: #3a261a; --pri: #93b2e8; --pri-soft: #1f2a3d;
+    --gap: #dcb45c; --gap-soft: #3a3019; --sel: #e5eae3; color-scheme: dark;
+  }
+  html { background: var(--bg); }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; padding-inline: 20px; padding-block: 28px 48px; }
+  .wrap { max-width: 1240px; margin-inline: auto; display: grid; gap: 28px; }
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--pri); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--pri); outline-offset: 2px; }
+
+  header { display: grid; gap: 10px; max-width: 72ch; }
+  .eyebrow { font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { font-family: var(--display); font-weight: 600; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; margin: 0; text-wrap: balance; }
+  h1 .s { color: var(--sys); } h1 .p { color: var(--pri); }
+  .lede { margin: 0; color: var(--ink); max-width: 66ch; }
+  .lede b.s { color: var(--sys); font-weight: 600; } .lede b.p { color: var(--pri); font-weight: 600; }
+  .byline { font-size: 14px; color: var(--muted); margin: 0; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; }
+  .toggle { appearance: none; border: 2px solid var(--pri); background: var(--surface); padding: 12px 18px; border-radius: 6px; font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; gap: 10px; align-items: center; }
+  .toggle .box { width: 16px; height: 16px; border: 2px solid currentColor; border-radius: 3px; display: inline-grid; place-items: center; font-size: 12px; line-height: 1; }
+  .toggle[aria-pressed="true"] .box::after { content: "✓"; }
+  .toggle.gap { border-color: var(--gap); }
+  .toggle.pulse { animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 5px var(--pri-soft); } }
+  .toggle.gap.pulse { animation-name: pulseGap; }
+  @keyframes pulseGap { 0%,100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 5px var(--gap-soft); } }
+  @media (prefers-reduced-motion: reduce) { .toggle.pulse { animation: none; } }
+
+  .main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 24px; align-items: start; }
+  .main > div { min-width: 0; }
+  .gridbox { overflow-x: auto; min-width: 0; }
+  .grid { display: grid; grid-template-columns: minmax(118px, 1.05fr) repeat(5, minmax(108px, 1fr)); gap: 4px; min-width: 690px; }
+  .corner { font-family: var(--mono); font-size: 11.5px; color: var(--muted); align-self: end; padding: 6px 4px; line-height: 1.35; }
+  .corner .s { color: var(--sys); } .corner .p { color: var(--pri); }
+  .colh, .rowh, .cell { appearance: none; border: 1px solid var(--line); background: var(--surface); border-radius: 4px; cursor: pointer; text-align: left; }
+  .colh { padding: 10px 10px 12px; border-top: 4px solid var(--pri); display: grid; gap: 4px; }
+  .colh .n { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+  .colh .t { font-weight: 600; font-size: 14px; line-height: 1.25; color: var(--pri); }
+  .rowh { padding: 10px; border-left: 4px solid var(--sys); display: grid; gap: 3px; align-content: start; }
+  .rowh .t { font-family: var(--display); font-weight: 600; font-size: 17px; color: var(--sys); line-height: 1.2; }
+  .rowh .g { font-family: var(--mono); font-size: 10.5px; color: var(--gap); letter-spacing: .03em; line-height: 1.3; }
+  .grid:not(.show-gaps) .rowh .g { visibility: hidden; }
+  .grid.show-gaps .rowh.gap-none-pillar, .grid.show-gaps .rowh.gap-partial { background: var(--gap-soft); border-left-color: var(--gap); }
+  .grid.show-gaps .cell.gaprow { background: var(--gap-soft); }
+  .cell { padding: 10px; min-height: 74px; font-size: 13.5px; line-height: 1.3; display: grid; align-content: space-between; gap: 6px; position: relative; }
+  .cell:hover { border-color: var(--muted); }
+  .cell .k { font-family: var(--mono); font-size: 10.5px; color: var(--pri); letter-spacing: .04em; text-transform: uppercase; visibility: hidden; }
+  .grid.show-key .cell.key { border-color: var(--pri); box-shadow: inset 0 0 0 1px var(--pri); }
+  .grid.show-key .cell.key .k { visibility: visible; }
+  .cell[aria-pressed="true"], .rowh[aria-pressed="true"], .colh[aria-pressed="true"] { outline: 3px solid var(--sel); outline-offset: -1px; }
+  .cell.inrow, .cell.incol { background: var(--surface); }
+  .grid .cell.hl { background: var(--pri-soft); }
+  .grid .cell.hls { background: var(--sys-soft); }
+  .hint { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
+  aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px 22px; display: grid; gap: 14px; min-width: 0; max-height: calc(100vh - 32px); overflow-y: auto; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-family: var(--mono); font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+  .chip.s { background: var(--sys-soft); color: var(--sys); }
+  .chip.p { background: var(--pri-soft); color: var(--pri); }
+  .chip.k { border: 1px solid var(--pri); color: var(--pri); }
+  aside h2 { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.28; margin: 0; text-wrap: balance; }
+  aside h3 { font-family: var(--mono); font-weight: 500; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+  aside p { margin: 0; }
+  aside section { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+  aside section.s h3 { color: var(--sys); } aside section.p h3 { color: var(--pri); }
+  blockquote { margin: 0; padding-left: 12px; border-left: 3px solid var(--line); }
+  .src { font-size: 13px; color: var(--muted); }
+  .pnav { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pnav button { appearance: none; border: 1px solid var(--line); background: var(--bg); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+  .pnav button:hover { border-color: var(--muted); }
+
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 24px 32px; }
+  .notes h2 { font-family: var(--display); font-weight: 600; font-size: 22px; margin: 0 0 8px; }
+  .notes ol, .notes ul { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+  .notes p { margin: 0 0 8px; max-width: 66ch; }
+  footer { border-top: 1px solid var(--line); padding-top: 16px; font-size: 13.5px; color: var(--muted); display: grid; gap: 8px; }
+  footer ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    aside { position: static; max-height: none; }
+    body { padding-inline: 16px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><a href="https://channelsintoknowledge.com/" target="_blank" rel="noopener">Channels into Knowledge</a></div>
+    <h1>The <span class="s">Seven</span> and the <span class="p">Five</span></h1>
+    <p class="lede">Down the side are <b class="s">seven systems</b> whose failures multiply. Across the top are <b class="p">five principles</b> of Revolutionary Intercommunal Mutualism for building what replaces them. Each cell turns one system and one principle into a question a community, or a Quaker meeting, can ask itself. Choose any cell, row or column.</p>
+    <p class="byline">Jeff Kisling</p>
+  </header>
+
+  <div class="controls">
+    <button class="toggle pulse" id="tKey" type="button" aria-pressed="true"><span class="box"></span>Mark the principle that matters most in each row</button>
+    <button class="toggle gap pulse" id="tGap" type="button" aria-pressed="false"><span class="box"></span>Show where the UPP has no pillar</button>
+  </div>
+
+  <div class="main">
+    <div>
+      <div class="gridbox"><div class="grid show-key" id="grid" role="group" aria-label="Seven systems by five principles"></div></div>
+      <p class="hint">Arrow keys move between cells once one is selected.</p>
+    </div>
+    <aside id="panel" aria-live="polite"></aside>
+  </div>
+
+  <div class="notes">
+    <div>
+      <h2>What the grid shows</h2>
+      <ol>
+        <li><b>Each list covers what the other leaves out.</b> The UPP's infrastructure stack is strongest on food, energy and community safety. It has no pillar for War or Spirit and treats Money only in passing. Those three rows are where Quaker practice has the most to offer.</li>
+        <li><b>Spirit holds the grid together.</b> Every principle depends on people doing slow, unpaid work over years, and Spirit supplies that motive. Channels sit in the Spirit row and hold up every other row too, which is why <i>Channels Between Nodes</i> calls them the layer beneath the stack, not a sixth pillar.</li>
+        <li><b>Both vocabularies stay intact.</b> The principles keep the UPP's own names and the systems keep yours. Nothing here renames one in the other's terms.</li>
+      </ol>
+    </div>
+    <div>
+      <h2>Open questions</h2>
+      <ul>
+        <li><b>Which list of principles.</b> These five come from the UPP's post of 16 February 2026. Their reader's guide lists nine, including Survival Pending Revolution, Subsidiarity and Anticipatory Resilience. The nine are more complete; the five fit a grid more easily.</li>
+        <li><b>Whether order matters.</b> The UPP's Lesson Three says its stack is built in sequence. The Channels work has treated it as built in no particular order. The two readings need to be reconciled, or the difference stated.</li>
+        <li><b>Health and technology.</b> The UPP names both as pillars; the seven systems do not. Do they sit inside the existing seven, or run across all of them?</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <div>Systems and the “What keeps failing” and “What communities have built” entries: Jeff Kisling, <a href="https://channelsintoknowledge.com/2026/10/02/on-the-precipice/" target="_blank" rel="noopener">On the Precipice</a> and <a href="https://channelsintoknowledge.com/2026/09/05/the-collapse-already-arrived/" target="_blank" rel="noopener">The Collapse Already Arrived</a>, on <a href="https://channelsintoknowledge.com/" target="_blank" rel="noopener">Channels into Knowledge</a>. The test questions and summaries are written for this grid and are not quotations.</div>
+    <div>The five principles and the phrases quoted from them are the United Panther Party – U.S.'s own. Read them in full:</div>
+    <ul id="srcs"></ul>
+  </footer>
+</div>
+
+<script>
+const DATA = {"principles": [{"id": "solidarity", "name": "Solidarity over Charity", "short": "Solidarity", "summary": "Help that flows one way, from givers to receivers, keeps a vertical hierarchy in place. Solidarity means horizontal relationships between equal partners: doing things with people, not for them.", "quote": "Charity is a trap."}, {"id": "selfdet", "name": "Collective Self-Determination", "short": "Self-determination", "summary": "Every community has the right and the power to define its own future. Lived experience counts as expertise, and the community keeps authority over every stage of planning instead of waiting for permission from above.", "quote": ""}, {"id": "care", "name": "Collective Care", "short": "Care", "summary": "Our survival is intertwined, so care is not outsourced to the state, nonprofits or corporations. People cook, heal, watch children, check on elders and defend their neighborhoods together.", "quote": "revolutionary love"}, {"id": "decentral", "name": "Decentralization of Power", "short": "Decentralization", "summary": "Top-down leadership concentrates power and invites abuse. Leadership is horizontal, and power is distributed across the community and shared.", "quote": ""}, {"id": "recip", "name": "Reciprocity and Regeneration", "short": "Reciprocity", "summary": "Everyone gives what they can and receives what they need, so no one is drained. Mutual aid has to nourish both the people and the land, and leave future generations stronger.", "quote": "respects the land as a living partner"}], "systems": [{"id": "water", "name": "Water", "most": "recip", "gap": "partial", "failing": "Aging treatment plants, droughts, rate spikes", "built": "Neighborhood water committees that attend utility board meetings; rain catchment; shared filtration during outages", "upp": "Water has no pillar of its own. It falls under climate resilience, which Lesson Six treats together with energy and shelter.", "upp_link": "lesson6", "lens": "Native leadership in how water is repaired and treated. The survival ground of the Channels work: Traditional Ecological Knowledge is knowledge non-Native people will need.", "cells": {"solidarity": ["Users or customers?", "Do the people who use this water help decide how it is shared, or are they only on the receiving end of a service?"], "selfdet": ["Who decides?", "Who makes decisions about our water today, and does the community most affected have a say before those decisions are made?"], "care": ["A week without water", "If the water failed for a week, who would make sure elders, children and the sick still had safe water to drink?"], "decentral": ["Who knows how?", "Does anyone outside the utility know how our water is treated, or does all of that knowledge sit in one office?"], "recip": ["Water as a relative", "Does our water work give back to the river and the land, or only take from them? Whose guidance on caring for water are we following?"]}}, {"id": "energy", "name": "Energy", "most": "decentral", "gap": "none", "failing": "Grid failures in heat waves and storms", "built": "Community solar on church, school and co-op roofs; one building per neighborhood with battery backup", "upp": "Distributed energy, such as microgrids, community solar and battery storage, under the climate resilience pillar (Lesson Six).", "upp_link": "lesson6", "lens": "Meetinghouses and schools are the kinds of roofs the On the Precipice table names for community solar.", "cells": {"solidarity": ["Who gets the power?", "Is community solar shared with the neighbors who need it most, or only with those who can afford to buy in?"], "selfdet": ["Who owns it?", "Who owns the panels, the batteries and the decisions about them?"], "care": ["The heat wave", "When the grid fails in a heat wave, where can people go to stay cool, and who checks on those who cannot get there?"], "decentral": ["Power, both kinds", "Does our energy project spread both electricity and decision-making, or does it rebuild a small copy of the central grid?"], "recip": ["The hidden cost", "Does the energy we use cost the land, or another community, something we do not see?"]}}, {"id": "food", "name": "Food", "most": "solidarity", "gap": "none", "failing": "Supply-chain gaps, prices, farm loss", "built": "Urban farms, a community kitchen, seed libraries, direct ties to nearby farmers", "upp": "Food sovereignty (Lesson Four): seed saving, community kitchens, community-supported agriculture, and the solidarity economy that grows from food.", "upp_link": "lesson4", "lens": "Des Moines Mutual Aid's weekly food giveaway, begun by the Black Panther Party: no requirements to receive food, and the lesson Jeff Kisling learned there, that you are part of the community only when you also take some of the food yourself.", "cells": {"solidarity": ["No eligibility rules", "Does anyone have to prove they qualify before they eat? Do the people giving out food also receive it?"], "selfdet": ["Who chooses?", "Who chooses what is grown, cooked and given out?"], "care": ["Who is missing?", "Who is missing from our table, and who goes to find them?"], "decentral": ["If one person left", "If the one organizer who runs the food program stepped away, would it keep going?"], "recip": ["Seed and soil", "Do we save seed, return scraps to the soil, and buy from farmers we know by name?"]}}, {"id": "money", "name": "Money", "most": "recip", "gap": "none-pillar", "failing": "Wages behind rent; little savings", "built": "Worker cooperatives, a credit union, a community land trust, time banks", "upp": "Not one of the five pillars. Lesson Four names the solidarity economy as starting from food: worker cooperatives, community land trusts, mutual credit networks, participatory budgeting.", "upp_link": "lesson4", "lens": "Money is itself one of the failing systems: the arrangement that made basic needs something people must buy, not the neutral background the other systems sit on.", "cells": {"solidarity": ["Donation or sharing?", "Does our help arrive as a donation from those who have to those who lack, or as resources shared among equals?"], "selfdet": ["Who holds the purse?", "Who controls the money raised for this community's work: the community, or the funders?"], "care": ["Rent is due", "When someone cannot pay rent this month, what do we do together before an agency is involved?"], "decentral": ["Signing authority", "Are decisions about money made openly by the people affected, or by a few with signing authority?"], "recip": ["Give what you can", "Does everyone give what they can and receive what they need, without anyone being drained?"]}}, {"id": "law", "name": "Law and politics", "most": "selfdet", "gap": "none", "failing": "Gridlock; courts that no longer check power", "built": "Neighborhood assemblies; local officials pressed to lease or transfer public land", "upp": "Base assemblies and delegated councils with recall (Lesson Nine); accountable safety and non-police crisis response (Lesson Eight).", "upp_link": "lesson9", "lens": "The repair clause: the institutions that would ordinarily fix failing systems can no longer do it. Quaker discernment in meetings for business, offered only if asked.", "cells": {"solidarity": ["For, or with?", "When we act politically, are we speaking for a community, or standing with it under its direction?"], "selfdet": ["Whose agenda?", "Does the community most affected set the agenda, or are we bringing our own?"], "care": ["Harm without police", "Who could respond to harm here without calling the police?"], "decentral": ["Recall", "Can the people who make decisions be questioned, rotated or replaced by those they serve?"], "recip": ["Beyond advocacy", "What do the communities we advocate alongside receive from us besides advocacy?"]}}, {"id": "war", "name": "War", "most": "care", "gap": "none-pillar", "failing": "Budgets for weapons, conscription pressure", "built": "Networks of support for young people who refuse military service; peace education", "upp": "No pillar of its own. Safety means non-police crisis response, de-escalation and conflict transformation (Lesson Eight). Lesson Fifteen treats internationalism.", "upp_link": "lesson8", "lens": "The peace testimony. Automatic draft registration takes effect December 18, 2026. Jeff Kisling's own draft resistance, 1969 to 1972, and what older Friends hold that young people need.", "cells": {"solidarity": ["Beside them", "Are we standing with young people facing registration on December 18, or advising them from a distance?"], "selfdet": ["Their decision", "Do young people decide for themselves about military service, with full knowledge of every option?"], "care": ["What elders hold", "Who among older Friends holds what young people need to know about conscientious objection, and have they offered it?"], "decentral": ["Held locally", "Does our peace work depend on one national office, or is it held in local relationships?"], "recip": ["What we owe", "What do we owe the communities, here and abroad, who bear the cost of wars paid for in our name?"]}}, {"id": "spirit", "name": "Spirit", "most": "all", "gap": "none-pillar", "failing": "Isolation, despair, spiritual poverty", "built": "Regular shared meals and silence; elders and young people working side by side", "upp": "No pillar. The nearest are the community rituals named under Reciprocity and Regeneration, and Collective Care described as revolutionary love.", "upp_link": "principles", "lens": "Spirit supplies the motive for slow, unpaid work over years. Leadings, and channels as the relational layer beneath every other row.", "cells": {"solidarity": ["Where we show up", "Do we gather only with people like ourselves, or do we show up where others gather?"], "selfdet": ["Waiting to be invited", "Do we wait to be invited, and follow the leadership of the people whose spaces we enter?"], "care": ["Who sits with them?", "Who among us is isolated or in despair, and who sits with them?"], "decentral": ["Passed between generations", "Does the spiritual life of our meeting rest on a few people, or is it shared and passed between generations?"], "recip": ["What flowed back", "What has flowed back from us to the people we have learned from, and did they ask for it?"]}}], "links": {"principles": ["5 Principles of Revolutionary Intercommunal Mutualism, Feb 16, 2026", "https://unitedpantherparty.substack.com/p/5-principles-of-revolutionary-intercommunal"], "lesson4": ["Lesson Four: Building Food Sovereignty in Real Time", "https://unitedpantherparty.substack.com/p/lesson-four"], "lesson6": ["Lesson Six: Energy, Shelter, and Climate Survival", "https://unitedpantherparty.substack.com/p/lesson-six"], "lesson8": ["Lesson Eight: Community Safety and Conflict Transformation", "https://unitedpantherparty.substack.com/p/lesson-eight"], "lesson9": ["Lesson Nine: Governance That Reflects the People", "https://unitedpantherparty.substack.com/p/lesson-nine"], "lesson3": ["Lesson Three: The Community Infrastructure Stack", "https://unitedpantherparty.substack.com/p/lesson-three"], "amplification": ["Amplification Over Appropriation", "https://unitedpantherparty.substack.com/p/amplification-over-appropriation"], "precipice": ["On the Precipice, Oct 2, 2026", "https://channelsintoknowledge.com/2026/10/02/on-the-precipice/"], "collapse": ["The Collapse Already Arrived, Sept 5, 2026", "https://channelsintoknowledge.com/2026/09/05/the-collapse-already-arrived/"], "collapseapp": ["Collapse Has Already Arrived (interactive)", "https://kislingjeff-oss.github.io/CollapseAlreadyArrived/"]}};
+(function () {
+  const P = DATA.principles, S = DATA.systems, L = DATA.links;
+  const grid = document.getElementById('grid'), panel = document.getElementById('panel');
+  const tKey = document.getElementById('tKey'), tGap = document.getElementById('tGap');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const link = k => '<a href="' + L[k][1] + '" target="_blank" rel="noopener">' + esc(L[k][0]) + '</a>';
+  const gapLabel = g => g === 'none-pillar' ? 'No UPP pillar' : g === 'partial' ? 'Folded into climate resilience' : '';
+  let sel = { kind: 'cell', r: 2, c: 0 };
+
+  // build the grid
+  grid.insertAdjacentHTML('beforeend', '<div class="corner"><span class="s">Systems ↓</span><br><span class="p">Principles →</span></div>');
+  P.forEach((p, c) => grid.insertAdjacentHTML('beforeend', '<button type="button" class="colh" data-c="' + c + '" aria-pressed="false"><span class="n">PRINCIPLE ' + (c + 1) + '</span><span class="t">' + esc(p.name) + '</span></button>'));
+  S.forEach((s, r) => {
+    grid.insertAdjacentHTML('beforeend', '<button type="button" class="rowh gap-' + s.gap + '" data-r="' + r + '" aria-pressed="false"><span class="t">' + esc(s.name) + '</span><span class="g">' + gapLabel(s.gap) + '</span></button>');
+    P.forEach((p, c) => {
+      const key = s.most === p.id || s.most === 'all';
+      grid.insertAdjacentHTML('beforeend', '<button type="button" class="cell' + (key ? ' key' : '') + (s.gap !== 'none' ? ' gaprow' : '') + '" data-r="' + r + '" data-c="' + c + '" aria-pressed="false" aria-label="' + esc(s.name + ' and ' + p.name + ': ' + s.cells[p.id][1]) + '"><span>' + esc(s.cells[p.id][0]) + '</span><span class="k">' + (s.most === 'all' ? 'all five' : 'key') + '</span></button>');
+    });
+  });
+  document.getElementById('srcs').innerHTML = ['principles', 'lesson3', 'lesson4', 'lesson6', 'lesson8', 'lesson9', 'amplification'].map(k => '<li>' + link(k) + '</li>').join('');
+
+  function principleBlock(p) {
+    return '<section class="p"><h3>The principle</h3><p>' + esc(p.summary) + '</p>' +
+      (p.quote ? '<blockquote>“' + esc(p.quote) + '”</blockquote>' : '') +
+      '<p class="src">United Panther Party – U.S., ' + link('principles') + '</p></section>';
+  }
+  function systemBlocks(s) {
+    return '<section class="s"><h3>What keeps failing</h3><blockquote>' + esc(s.failing) + '</blockquote></section>' +
+      '<section class="s"><h3>What communities have built</h3><blockquote>' + esc(s.built) + '</blockquote><p class="src">Jeff Kisling, ' + link('precipice') + '</p></section>' +
+      '<section class="p"><h3>What the UPP already builds here</h3><p>' + esc(s.upp) + '</p><p class="src">' + link(s.upp_link) + '</p></section>' +
+      '<section class="s"><h3>What the Channels work adds</h3><p>' + esc(s.lens) + '</p></section>';
+  }
+  function render() {
+    grid.querySelectorAll('[aria-pressed]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    grid.querySelectorAll('.cell').forEach(b => b.classList.remove('hl', 'hls'));
+    let h = '';
+    if (sel.kind === 'cell') {
+      const s = S[sel.r], p = P[sel.c], key = s.most === p.id;
+      grid.querySelector('.cell[data-r="' + sel.r + '"][data-c="' + sel.c + '"]').setAttribute('aria-pressed', 'true');
+      h += '<div class="chips"><span class="chip s">' + esc(s.name) + '</span><span class="chip p">' + esc(p.name) + '</span>' + (key ? '<span class="chip k">Key principle for this row</span>' : '') + '</div>';
+      h += '<h2>' + esc(s.cells[p.id][1]) + '</h2>';
+      h += systemBlocks(s) + principleBlock(p);
+      h += '<div class="pnav"><button type="button" data-go="row">All of ' + esc(s.name) + '</button><button type="button" data-go="col">All of ' + esc(p.short) + '</button></div>';
+    } else if (sel.kind === 'row') {
+      const s = S[sel.r];
+      grid.querySelector('.rowh[data-r="' + sel.r + '"]').setAttribute('aria-pressed', 'true');
+      grid.querySelectorAll('.cell[data-r="' + sel.r + '"]').forEach(b => b.classList.add('hls'));
+      h += '<div class="chips"><span class="chip s">System</span>' + (s.gap !== 'none' ? '<span class="chip k">' + gapLabel(s.gap) + '</span>' : '') + '</div><h2>' + esc(s.name) + '</h2>';
+      h += systemBlocks(s);
+      h += '<section><h3>Five questions</h3><ol>' + P.map(p => '<li>' + esc(s.cells[p.id][1]) + '</li>').join('') + '</ol></section>';
+    } else {
+      const p = P[sel.c];
+      grid.querySelector('.colh[data-c="' + sel.c + '"]').setAttribute('aria-pressed', 'true');
+      grid.querySelectorAll('.cell[data-c="' + sel.c + '"]').forEach(b => b.classList.add('hl'));
+      h += '<div class="chips"><span class="chip p">Principle ' + (sel.c + 1) + ' of 5</span></div><h2>' + esc(p.name) + '</h2>' + principleBlock(p);
+      const keyRows = S.filter(s => s.most === p.id).map(s => s.name);
+      if (keyRows.length) h += '<section><h3>Key principle for</h3><p>' + esc(keyRows.join(', ')) + '</p></section>';
+      h += '<section><h3>Seven questions</h3><ol>' + S.map(s => '<li><b>' + esc(s.name) + ':</b> ' + esc(s.cells[p.id][1]) + '</li>').join('') + '</ol></section>';
+    }
+    panel.innerHTML = h;
+    panel.scrollTop = 0;
+    panel.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { sel = b.dataset.go === 'row' ? { kind: 'row', r: sel.r } : { kind: 'col', c: sel.c }; render(); });
+  }
+  function choose(next, fromClick) {
+    sel = next; render();
+    if (fromClick && window.matchMedia('(max-width: 900px)').matches) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  grid.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.classList.contains('cell')) choose({ kind: 'cell', r: +b.dataset.r, c: +b.dataset.c }, true);
+    else if (b.classList.contains('rowh')) choose({ kind: 'row', r: +b.dataset.r }, true);
+    else if (b.classList.contains('colh')) choose({ kind: 'col', c: +b.dataset.c }, true);
+  });
+  grid.addEventListener('keydown', e => {
+    const b = e.target.closest('.cell'); if (!b) return;
+    let r = +b.dataset.r, c = +b.dataset.c;
+    const m = { ArrowRight: [0, 1], ArrowLeft: [0, -1], ArrowDown: [1, 0], ArrowUp: [-1, 0] }[e.key];
+    if (!m) return;
+    e.preventDefault();
+    r = Math.max(0, Math.min(S.length - 1, r + m[0])); c = Math.max(0, Math.min(P.length - 1, c + m[1]));
+    choose({ kind: 'cell', r, c }, false);
+    grid.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]').focus();
+  });
+  function bindToggle(btn, cls) {
+    btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-pressed') !== 'true';
+      btn.setAttribute('aria-pressed', on); grid.classList.toggle(cls, on); btn.classList.remove('pulse');
+    });
+  }
+  bindToggle(tKey, 'show-key'); bindToggle(tGap, 'show-gaps');
+  render();
+})();
+</script>
